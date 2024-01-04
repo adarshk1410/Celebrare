@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+ <html lang="en">
+   <head>
+     <meta charset ="UTF-8">
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <title> Celebrare Editing Page! </title>
+     <link rel = "stylesheet" href = "./style.css">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/css2?family=Rubik+Doodle+Shadow&display=swap" rel="stylesheet">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+     <link rel="icon" type="image/x-icon" href = "./assets/couple.png">
+     <script src="./script.js"></script>
+   </head>
+   <body>
+    <div class="header">
+        <span class="logo">Celebrare</span>
+    </div>
+    <div class = "body-container">
+        <div class = "cont-1">
+            <div class="New-text" id="output" onmousedown="startDragging(event)">Add text</div>
+        </div>
+        <div class = "cont-2">
+            <div class = "image">
+                <img class="edit-here" src="./assets/oie_FnNMUZhL3V5H.png">
+            </div>
+            <div class="edit-container">
+            <div class = "row-1">
+                <div class = "font-dropdown">
+                <span class = "font">Font</span>
+                    <select id="fontSelect" onchange="updateTextProperties()">
+                        <option value="Arial">Arial</option>
+                        <option value="Arial-Italic">Arial-Italic</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Roboto Mono">Roboto Mono</option>
+                        <option value="Rubik Doodle Shadow">Rubik Doodle Shadow</option>
+                    </select>
+                </div>
+            </div>
+            <div class = "row-2">
+                <div class="col-2">
+                    <div class = "font-Size">
+                     <span class = "size">Size</span>
+                     <input type = "number" value="16" id="fontSize" oninput="updateTextProperties()">
+                   </div>
+                   <div class="font-color">
+                     <span class = "color">Color</span>
+                     <input type = "color" class="color-input" id="fontColor" oninput="updateTextProperties()">
+                  </div>
+                </div>
+            </div>
+            <div class = "row-3">
+                <div class = "Add-text">
+                    <button id="addTextBoxButton">Add Text Box</button><script src="script.js"></script>
+                    <input type = "text" id="textInput" placeholder="Add Text" oninput="updateText(this)"> 
+                </div>
+              </div>
+            </div>
+            <div class="btns">
+                <div class="btn">
+                    <button class="undo-btn" onclick="undo()">Undo</button>
+                </div>
+                <div class="btn">
+                    <button class="redo-btn" onclick="redo()">Redo</button>
+                </div>
+          </div>
+        </div>
+    </div>
+   </body>
+ </html>
