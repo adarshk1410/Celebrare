@@ -1,0 +1,149 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+body {
+    background-color: #AFC8AD;
+}
+.header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5vw 0;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    background-color: #EEE7DA;
+    border-bottom: 1px solid black;
+}
+.btns {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1vw;
+    gap: 1vw;
+}
+.btns button {
+        background-color: #F2F1EB; 
+        border: 0.1vw solid black;
+        color: black;
+        padding: 0.846vh 0.781vw;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 0.9rem;
+}      
+.btns button:hover {
+        cursor: pointer;
+        background-color: #EEE7DA; 
+        transition: 0.3s ease;
+        transform: scale(1.1);
+}
+.btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1vw;
+}
+.body-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5vw;
+    padding: 4vw 0vw;
+}
+.cont-1 {
+    background-color: #F2F1EB;
+    border: 0.1vw solid black;
+    height: 70vh;
+    width: 30vw;
+    padding: 1vw;
+    border-radius: 0.5rem;
+}
+.cont-2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.1vw;
+}
+.col-2 {
+    display: flex;
+    gap: 1vw;
+}
+.font-dropdown,
+.font-Size,
+.font-color {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2vw;
+}
+.font-Size {
+    width: 2.3vw;
+}
+.color-input {
+    width: 1.5vw;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.color-input::-webkit-color-swatch {
+    border: none;
+    border-radius: 50%;
+    overflow: hidden;
+}
+.New-text {
+    height: fit-content;
+    width: fit-content;
+    padding: 0.3vw;
+    color: grey;
+    font-family: Arial;
+}
+.New-text:focus-within {
+    border: 0.1vw dotted black;
+}
+#output {
+    border: 0.1vw dotted black;
+}
+.cont-1 {
+    position: relative;
+}
+
+.cont-1 .New-text {
+    position: absolute;
+    cursor: move;
+}
+.edit-here {
+    width: 9.5vw;
+}
+.edit-container {
+    background-color: #EEE7DA;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8vw;
+    padding: 2vw;
+    border: 0.1vw solid black;
+    border-radius: 0.5rem;
+}
+.edit-container:hover{
+    transform: 10%;
+}
+input, select {
+    padding: 0.24vw;
+    background-color: #F2F1EB;
+    border: 1px dotted black;
+}
+#fontSize {
+    padding-right: 0;
+}
+select:hover {
+    transform: scale(1.1);
+    border: none;
+    transition: 0.3s ease;
+}
+input:hover {
+    transform: scale(1.1);
+    border: none;
+    transition: 0.3s ease;
+}
+
