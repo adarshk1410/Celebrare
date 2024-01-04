@@ -1,140 +1,181 @@
+var undoStack = [];
+var redoStack = [];
+var isDragging = false;
 
-    var undoStack = [];
-    var redoStack = [];
-    var offsetX, offsetY, isDragging = false;
+document.addEventListener('DOMContentLoaded', function () {
+    saveState(); // Save the initial state
+});
 
+function addTextBox() {
+    var cont1 = document.querySelector('.cont-1');
 
-    document.addEventListener('DOMContentLoaded', function () {
-        saveState(); // Save the initial state
+    var newText = document.createElement('div');
+    newText.classList.add('New-text');
+    newText.innerText = 'New Text';
+    newText.contentEditable = true;
+
+    newText.style.fontFamily = 'Arial';
+    newText.style.fontSize = '16px';
+    newText.style.color = '#000000';
+
+    newText.addEventListener('mousedown', function (e) {
+        selectTextBox(e.target);
+        startDragging(e);
+    });
+    newText.addEventListener('input', function () {
+        updateTextProperties();
     });
 
+    cont1.appendChild(newText);
 
-    function startDragging(e) {
-        var output = document.getElementById('output');
-        offsetX = e.clientX - output.offsetLeft;
-        offsetY = e.clientY - output.offsetTop;
-        isDragging = true;
-        document.addEventListener('mousemove', dragElement);
-        document.addEventListener('mouseup', stopDragging);
-        output.style.border = '0.1vw dotted black';
-        e.preventDefault(); // Prevent default behavior to avoid text selection during drag
+    // Set the newly added text box as the selectedText
+    selectTextBox(newText);
+
+    // Save state after adding text box
+    saveState();
+}
+
+function selectTextBox(textBox) {
+    selectedText = textBox;
+    updateEditContainer();
+}
+
+function updateEditContainer() {
+    var fontSelect = document.getElementById('fontSelect');
+    var fontSize = document.getElementById('fontSize');
+    var fontColor = document.getElementById('fontColor');
+
+    if (selectedText) {
+        fontSelect.dataset.originalValue = selectedText.style.fontFamily;
+        fontSelect.value = selectedText.style.fontFamily;
+        fontSize.value = parseInt(selectedText.style.fontSize) || 16;
+        fontColor.value = selectedText.style.color || '#000000';
+    } else {
+        // Set default values when no text is selected
+        fontSelect.value = 'Arial';
+        fontSize.value = 16;
+        fontColor.value = '#000000';
     }
+}
 
-    function dragElement(e) {
-        if (isDragging) {
-            var output = document.getElementById('output');
-            var cont1 = document.querySelector('.cont-1');
-            var maxX = cont1.clientWidth - output.clientWidth;
-            var maxY = cont1.clientHeight - output.clientHeight;
 
-            var newX = e.clientX - offsetX;
-            var newY = e.clientY - offsetY;
-
-            // Ensure the new position is within the boundaries
-            newX = Math.max(0, Math.min(newX, maxX));
-            newY = Math.max(0, Math.min(newY, maxY));
-
-            output.style.left = newX + 'px';
-            output.style.top = newY + 'px';
-        }
-    }
-
-    function stopDragging() {
-        if (isDragging) {
-            isDragging = false;
-            saveState();
-        }
-        document.removeEventListener('mousemove', dragElement);
-        document.removeEventListener('mouseup', stopDragging);
-    }
-
-    function updateText(input) {
-        var output = document.getElementById('output');
-        output.innerHTML = input.value;
-        output.style.border = '0.1vw dotted black';
-        updateTextProperties();
-    }
-
-    function updateTextProperties() {
-        var output = document.getElementById('output');
-        var fontSelect = document.getElementById('fontSelect');
-        var fontSize = document.getElementById('fontSize');
-        var fontColor = document.getElementById('fontColor');
-
-        output.style.fontFamily = fontSelect.value;
-        output.style.fontSize = fontSize.value + 'px';
-        output.style.color = fontColor.value;
+function updateText(input) {
+    if (selectedText) {
+        selectedText.innerText = input.value;
         saveState();
     }
+}
 
-    function saveState() {
-        var output = document.getElementById('output');
-        var textInput = document.getElementById('textInput');
-        var fontSelect = document.getElementById('fontSelect');
-        var fontSize = document.getElementById('fontSize');
-        var fontColor = document.getElementById('fontColor');
+document.getElementById('textInput').addEventListener('input', function () {
+    updateText(this);
+});
 
-        var state = {
-            outputHTML: output.innerHTML,
-            outputStyle: {
-                left: output.style.left,
-                top: output.style.top,
-                fontFamily: output.style.fontFamily,
-                fontSize: output.style.fontSize,
-                color: output.style.color
-            },
-            textInputValue: textInput.value,
-            fontSelectValue: fontSelect.value,
-            fontSizeValue: fontSize.value,
-            fontColorValue: fontColor.value
+
+function updateTextProperties() {
+    if (selectedText) {
+        selectedText.style.fontFamily = document.getElementById('fontSelect').value;
+        selectedText.style.fontSize = document.getElementById('fontSize').value + 'px';
+        selectedText.style.color = document.getElementById('fontColor').value;
+
+        saveState();
+    }
+}
+
+document.getElementById('fontSelect').addEventListener('change', function () {
+    if (selectedText) {
+        selectedText.style.fontFamily = this.value;
+        saveState();
+    }
+});
+
+
+function saveState() {
+    if (selectedText) {
+        var textProperties = {
+            left: selectedText.style.left,
+            top: selectedText.style.top,
+            fontFamily: selectedText.style.fontFamily || 'Arial',
+            fontSize: parseInt(selectedText.style.fontSize) || 16,
+            color: selectedText.style.color || '#000000'
         };
 
-        undoStack.push(state);
+        undoStack.push(textProperties);
         redoStack = [];
         console.log(undoStack);
     }
+}
 
-    function undo() {
-        if (undoStack.length > 1) {
-            redoStack.push(undoStack.pop());
-            var state = undoStack[undoStack.length - 1];
-            restoreState(state);
-        }
-        console.log(undoStack);
+
+function undo() {
+    if (undoStack.length > 1) {
+        redoStack.push(undoStack.pop());
+        var textProperties = undoStack[undoStack.length - 1];
+        restoreState(textProperties);
+        updateEditContainer();
     }
+    console.log(undoStack);
+}
 
-    function redo() {
-        if (redoStack.length > 0) {
-            var state = redoStack.pop();
-            undoStack.push(state);
-            restoreState(state);
-        }
-        console.log(undoStack);
+function redo() {
+    if (redoStack.length > 0) {
+        var textProperties = redoStack.pop();
+        undoStack.push(textProperties);
+        restoreState(textProperties);
+        updateEditContainer();
     }
+    console.log(undoStack);
+}
 
-    function restoreState(state) {
-        var output = document.getElementById('output');
-        var textInput = document.getElementById('textInput');
-        var fontSelect = document.getElementById('fontSelect');
-        var fontSize = document.getElementById('fontSize');
-        var fontColor = document.getElementById('fontColor');
-
-        output.innerHTML = state.outputHTML;
-        output.style.left = state.outputStyle.left;
-        output.style.top = state.outputStyle.top;
-        output.style.fontFamily = state.outputStyle.fontFamily;
-        output.style.fontSize = state.outputStyle.fontSize;
-        output.style.color = state.outputStyle.color;
-
-        textInput.value = state.textInputValue;
-        fontSelect.value = state.fontSelectValue;
-        fontSize.value = state.fontSizeValue;
-        fontColor.value = state.fontColorValue;
+function restoreState(textProperties) {
+    if (selectedText) {
+        selectedText.style.left = textProperties.left;
+        selectedText.style.top = textProperties.top;
+        selectedText.style.fontFamily = textProperties.fontFamily;
+        selectedText.style.fontSize = textProperties.fontSize + 'px';
+        selectedText.style.color = textProperties.color;
     }
+}
 
-    document.addEventListener('click', function (e) {
-        var output = document.getElementById('output');
-        if (!output.contains(e.target)) {
-            output.style.border = 'none';
-        }
-    });
+document.addEventListener('mousedown', function (e) {
+    selectTextBox(e.target);
+});
+
+function startDragging(e) {
+    offsetX = e.clientX - selectedText.offsetLeft;
+    offsetY = e.clientY - selectedText.offsetTop;
+    isDragging = true;
+
+    document.addEventListener('mousemove', dragSelectedText);
+    document.addEventListener('mouseup', stopDragging);
+
+    e.preventDefault();
+}
+
+function dragSelectedText(e) {
+    if (isDragging) {
+        var maxX = window.innerWidth - selectedText.clientWidth;
+        var maxY = window.innerHeight - selectedText.clientHeight;
+
+        var newX = e.clientX - offsetX;
+        var newY = e.clientY - offsetY;
+
+        // Ensure the new position is within the boundaries
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+
+        selectedText.style.left = newX + 'px';
+        selectedText.style.top = newY + 'px';
+    }
+}
+
+function stopDragging() {
+    if (isDragging) {
+        isDragging = false;
+
+        document.removeEventListener('mousemove', dragSelectedText);
+        document.removeEventListener('mouseup', stopDragging);
+
+        // Save the state when dragging stops
+        saveState();
+    }
+}

@@ -146,4 +146,16 @@ input:hover {
     border: none;
     transition: 0.3s ease;
 }
+.New-text {
+    height: fit-content;
+    width: fit-content;
+    padding: 0.3vw;
+    color: grey;
+    font-family: Arial;
+    cursor: move;
+    position: relative;
+}
 
+.New-text:focus-within {
+    border: 0.1vw dotted black;
+}
