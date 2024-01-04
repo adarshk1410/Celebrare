@@ -3,7 +3,6 @@ var redoStack = [];
 var isDragging = false;
 
 document.addEventListener('DOMContentLoaded', function () {
-    addTextBox(); // Initialize with a default text box
     saveState(); // Save the initial state
 });
 
@@ -83,9 +82,13 @@ function updateText(input) {
     }
 }
 
-document.getElementById('textInput').addEventListener('input', function () {
-    updateText(this);
-});
+// document.getElementById('fontSelect').addEventListener('change', function () {
+//     if (selectedText) {
+//         selectedText.style.fontFamily = this.value;
+//         saveState();
+//     }
+// });
+
 
 function updateTextProperties() {
     if (selectedText) {
@@ -141,19 +144,36 @@ function undo() {
         var textProperties = undoStack[undoStack.length - 1];
         restoreState(textProperties);
         updateEditContainer();
+    }else if (undoStack.length === 1) {
+        // Special case: If there is only one item in the undo stack, remove the text box
+        selectedText.remove();
+        selectedText = null; // Reset selectedText to null since the text box is removed
+        undoStack.pop(); // Remove the last state from the stack
+       
+        // Save state (empty state) after removing the text box
+        updateEditContainer();
+        saveState();
     }
-    console.log(undoStack);
+    console.log(undoStack); 
 }
 
 function redo() {
     if (redoStack.length > 0) {
         var textProperties = redoStack.pop();
         undoStack.push(textProperties);
+
+        // Check if a text box is already present, if not, create a new one
+        if (!selectedText) {
+            addTextBox();
+        }
+
+        // Apply the restored state
         restoreState(textProperties);
         updateEditContainer();
     }
     console.log(undoStack);
 }
+
 
 function restoreState(textProperties) {
     if (selectedText) {
