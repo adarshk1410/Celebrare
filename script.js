@@ -3,6 +3,7 @@ var redoStack = [];
 var isDragging = false;
 
 document.addEventListener('DOMContentLoaded', function () {
+    addTextBox(); // Initialize with a default text box
     saveState(); // Save the initial state
 });
 
@@ -14,9 +15,14 @@ function addTextBox() {
     newText.innerText = 'New Text';
     newText.contentEditable = true;
 
-    newText.style.fontFamily = 'Arial';
-    newText.style.fontSize = '16px';
-    newText.style.color = '#000000';
+    // Set default values for each text box
+    newText.defaultValues = {
+        fontFamily: 'Arial',
+        fontSize: '16px',
+        color: '#000000',
+    };
+
+    applyTextProperties(newText.defaultValues, newText.style);
 
     newText.addEventListener('mousedown', function (e) {
         selectTextBox(e.target);
@@ -35,8 +41,16 @@ function addTextBox() {
     saveState();
 }
 
+function applyTextProperties(properties, elementStyle) {
+    elementStyle.fontFamily = properties.fontFamily;
+    elementStyle.fontSize = properties.fontSize;
+    elementStyle.color = properties.color;
+}
+
 function selectTextBox(textBox) {
     selectedText = textBox;
+    var fontSelect = document.getElementById('fontSelect');
+    (fontSelect.dataset.originalValue = selectedText.style.fontFamily || 'Arial').replace(/"/g, '');
     updateEditContainer();
 }
 
@@ -46,20 +60,20 @@ function updateEditContainer() {
     var fontColor = document.getElementById('fontColor');
     var textInput = document.getElementById('textInput');
 
-    if (selectedText) {
-        fontSelect.dataset.originalValue = selectedText.style.fontFamily;
-        fontSelect.value = selectedText.style.fontFamily;
+    if (selectedText && !isDragging) {
+        fontSelect.value = (selectedText.style.fontFamily).replace(/"/g, '');
         fontSize.value = parseInt(selectedText.style.fontSize) || 16;
-        fontColor.value = selectedText.style.color || '#000000';
-        textInput.value = selectedText.innerText; // Added to update text content in edit container
+        fontColor.value = rgbToHex(selectedText.style.color || 'rgb(0, 0, 0)');
+        textInput.value = selectedText.innerText; // Added to update text content in the edit container
     } else {
-        // Set default values when no text is selected
-        fontSelect.value = 'Arial';
-        fontSize.value = 16;
+        // Set default values when no text is selected or when dragging
+        fontSelect.value = '';
+        fontSize.value = ''; // Update this line to handle the font size correctly
         fontColor.value = '#000000';
-        textInput.value = ''; // Added to clear text content in edit container when no text is selected
+        textInput.value = ''; // Added to clear text content in the edit container when no text is selected
     }
 }
+
 
 
 function updateText(input) {
@@ -72,7 +86,6 @@ function updateText(input) {
 document.getElementById('textInput').addEventListener('input', function () {
     updateText(this);
 });
-
 
 function updateTextProperties() {
     if (selectedText) {
@@ -91,24 +104,36 @@ document.getElementById('fontSelect').addEventListener('change', function () {
     }
 });
 
-
 function saveState() {
     if (selectedText) {
         var textProperties = {
             left: selectedText.style.left,
             top: selectedText.style.top,
-            fontFamily: selectedText.style.fontFamily || 'Arial',
-            fontSize: parseInt(selectedText.style.fontSize) || 16,
-            color: selectedText.style.color || '#000000',
+            fontFamily: selectedText.style.fontFamily,
+            fontSize: selectedText.style.fontSize, // Save fontSize as a string
+            color: rgbToHex(selectedText.style.color || 'rgb(0, 0, 0)'),
             text: selectedText.innerText
         };
 
         undoStack.push(textProperties);
         redoStack = [];
-        console.log(undoStack);
+        console.log('Saved state:', textProperties);
     }
 }
 
+
+function rgbToHex(rgb) {
+    // Extract the individual RGB components
+    var [r, g, b] = rgb.match(/\d+/g);
+
+    // Convert to hex and pad with zeros if needed
+    r = ('0' + parseInt(r).toString(16)).slice(-2);
+    g = ('0' + parseInt(g).toString(16)).slice(-2);
+    b = ('0' + parseInt(b).toString(16)).slice(-2);
+
+    // Combine and return the hex color
+    return `#${r}${g}${b}`;
+}
 
 function undo() {
     if (undoStack.length > 1) {
@@ -134,9 +159,7 @@ function restoreState(textProperties) {
     if (selectedText) {
         selectedText.style.left = textProperties.left;
         selectedText.style.top = textProperties.top;
-        selectedText.style.fontFamily = textProperties.fontFamily;
-        selectedText.style.fontSize = textProperties.fontSize + 'px';
-        selectedText.style.color = textProperties.color;
+        applyTextProperties(textProperties, selectedText.style);
         selectedText.innerText = textProperties.text;
     }
 }
@@ -158,8 +181,9 @@ function startDragging(e) {
 
 function dragSelectedText(e) {
     if (isDragging) {
-        var maxX = window.innerWidth - selectedText.clientWidth;
-        var maxY = window.innerHeight - selectedText.clientHeight;
+        var cont1 = document.querySelector('.cont-1');
+        var maxX = cont1.clientWidth - selectedText.clientWidth;
+        var maxY = cont1.clientHeight - selectedText.clientHeight;
 
         var newX = e.clientX - offsetX;
         var newY = e.clientY - offsetY;

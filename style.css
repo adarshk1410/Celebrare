@@ -52,10 +52,13 @@ body {
     padding: 4vw 0vw;
 }
 .cont-1 {
+    height: 71vh;
+    width: 18vw;
+    background-image: url("./assets/background.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
     background-color: #F2F1EB;
-    border: 0.1vw solid black;
-    height: 70vh;
-    width: 30vw;
+    border: 0.5vw solid #4A3B2F;
     padding: 1vw;
     border-radius: 0.5rem;
 }
