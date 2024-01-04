@@ -44,17 +44,20 @@ function updateEditContainer() {
     var fontSelect = document.getElementById('fontSelect');
     var fontSize = document.getElementById('fontSize');
     var fontColor = document.getElementById('fontColor');
+    var textInput = document.getElementById('textInput');
 
     if (selectedText) {
         fontSelect.dataset.originalValue = selectedText.style.fontFamily;
         fontSelect.value = selectedText.style.fontFamily;
         fontSize.value = parseInt(selectedText.style.fontSize) || 16;
         fontColor.value = selectedText.style.color || '#000000';
+        textInput.value = selectedText.innerText; // Added to update text content in edit container
     } else {
         // Set default values when no text is selected
         fontSelect.value = 'Arial';
         fontSize.value = 16;
         fontColor.value = '#000000';
+        textInput.value = ''; // Added to clear text content in edit container when no text is selected
     }
 }
 
@@ -96,7 +99,8 @@ function saveState() {
             top: selectedText.style.top,
             fontFamily: selectedText.style.fontFamily || 'Arial',
             fontSize: parseInt(selectedText.style.fontSize) || 16,
-            color: selectedText.style.color || '#000000'
+            color: selectedText.style.color || '#000000',
+            text: selectedText.innerText
         };
 
         undoStack.push(textProperties);
@@ -133,6 +137,7 @@ function restoreState(textProperties) {
         selectedText.style.fontFamily = textProperties.fontFamily;
         selectedText.style.fontSize = textProperties.fontSize + 'px';
         selectedText.style.color = textProperties.color;
+        selectedText.innerText = textProperties.text;
     }
 }
 
